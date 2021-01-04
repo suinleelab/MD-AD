@@ -7,7 +7,14 @@ Code for paper "Unified AI framework to uncover deep interrelationships between 
 
 **Pathways and gene sets:** In our analyses, we evaluated our results with respect to publically available gene sets. These include REACTOME and KEGG pathways available from MSigDB (c2 pathways v7.0). We also obtained gene signatures from [Olah et al. (2020)](https://doi.org/10.1038/s41467-020-19737-2) and [Mathys et al. (2019)](https://doi.org/10.1038/s41586-019-1195-2) (each available as supplementary data from the respective papers).
 
-### Code to perform analyses and generate figures:
+
+#### Code to train models:
+- Training MD-AD
+- Training MLP / Linear baselines
+- Extracting embeddings
+- Extracting gene importances with Integrated Gradients
+
+#### Code to perform analyses and generate figures:
 
 - Figure 2a - Paper_Analyses/CV_Prediction_Performance.ipynb
 - Figure 2b - Paper_Analyses/Subsets_CV_ROSMAP_Plots.ipynb
