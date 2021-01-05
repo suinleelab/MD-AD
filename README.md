@@ -21,7 +21,6 @@ Code for paper "Unified AI framework to uncover deep interrelationships between 
 - Figures 2c-d, 7a-b - Paper_Analyses/External_validation_predictions.ipynb
 - Figures 3a-c - Paper_Analyses/Evaluate_Embedding_Correlations.ipynb and Paper_Analyses/t-SNE_plots_internal.ipynb
 - Figures 3d-e, 7c - Paper_Analyses/t-SNE_embeddings_external.ipynb
-- Figure 4a-b, 6c - 
-- Figure 4c - 
-- Figures 5 and 6a-b - 
-
+- Figure 4a-b, 6c - Paper_Analyses/Final_genes_color_by_genesets.ipynb
+- Figure 4c - Paper_Analyses/Final_genes_rank_comparisons.ipynb
+- Figures 5 and 6a-b - Paper_Analyses/Final_genes_interaction_analyses.ipynb
