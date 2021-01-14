@@ -11,8 +11,7 @@ Code for paper "Unified AI framework to uncover deep interrelationships between 
 
 
 #### Code to train models:
-- Training MD-AD
-- Training MLP / Linear baselines
+- Training Models - Modeling_Notebooks/
 - Extracting embeddings
 - Extracting gene importances with Integrated Gradients
 
