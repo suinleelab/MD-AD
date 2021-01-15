@@ -126,3 +126,5 @@ for rep in repfolders:
             if not os.path.isdir("%sMTL/%i/"%(final_rep_embeddings_savepath, HIDDEN_LAYER)):
                 os.makedirs("%sMTL/%i/"%(final_rep_embeddings_savepath, HIDDEN_LAYER))
             np.savetxt("%sMTL/%i/%s.txt"%(final_rep_embeddings_savepath, HIDDEN_LAYER, rep),X_transformed)
+            
+            

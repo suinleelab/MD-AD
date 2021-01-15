@@ -32,6 +32,8 @@ final_models_save_path =  "../../md-ad_public_repo_data/Modeling/final_model/%s/
 path_to_final_models_chosen = "../../AD_Project/analyses/MTL_variable_tasks/6vars-continuous/%s/final_models_chosen/"%SPECIFIC_FOLDER
 final_rep_embeddings_savepath = "../../md-ad_public_repo_data/Modeling/final_model/%s/model_transformations/"%SPECIFIC_FOLDER
 
+final_models_save_path =  "../../md-ad_public_repo_data/Modeling/final_model/%s/"%SPECIFIC_FOLDER
+
 
 
 # PRE-COMPUTED DATA:
