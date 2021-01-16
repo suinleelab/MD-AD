@@ -8,6 +8,8 @@ import sys
 import pickle
 import tensorflow as tf
 import os
+import gc
+
 
 from configs import * 
 from models import ignorenans_categorical_accuracy, ordloss, ignorenans_mse, ignorenans_scaled_mse
@@ -18,7 +20,7 @@ K.tensorflow_backend._get_available_gpus()
 
 
 
-with h5py.File(path_to_MDAD_data_folders + "%s/%s.h5"%(SPECIFIC_FOLDER, full_pca_dataset), 'r') as hf:
+with h5py.File(path_to_MDAD_data_folders + "%s.h5"%(full_pca_dataset), 'r') as hf:
     X = hf["ge_transformed"][:,:num_components].astype(np.float64)      
     
 
@@ -59,7 +61,9 @@ for phenotype in phenotypes:
 
     repfolders_idx = np.where(["." not in x for x in  os.listdir(path_to_models)])[0]
     repfolders = np.array(os.listdir(path_to_models))[repfolders_idx]
-    
+
+    # from a single run, it's obvious that MLP is overfitting to the phenotypes, so no need for consensus calculations
+    repfolders = ["0"]
     for rep in repfolders:
         path_to_model = path_to_models + "%s/200.hdf5"%rep
 
@@ -100,12 +104,11 @@ path_to_models = final_models_save_path + "models/MTL/%s/%s/"%(full_pca_dataset,
 repfolders_idx = np.where(["." not in x for x in  os.listdir(path_to_models)])[0]
 repfolders = np.array(os.listdir(path_to_models))[repfolders_idx]
 
-
-for rep in repfolders:
+for rep in repfolders[60:]:
     path_to_model = path_to_models + "%s/200.hdf5"%rep
 
 
-    for HIDDEN_LAYER in [0]:
+    for HIDDEN_LAYER in [1]:
 
         # GET TRANSFORMATIONS FOR THE MODEL UP TO THE LAYER OF INTEREST 
         if type(MTL_LAYER_IDXes[HIDDEN_LAYER]) == dict:
@@ -126,5 +129,8 @@ for rep in repfolders:
             if not os.path.isdir("%sMTL/%i/"%(final_rep_embeddings_savepath, HIDDEN_LAYER)):
                 os.makedirs("%sMTL/%i/"%(final_rep_embeddings_savepath, HIDDEN_LAYER))
             np.savetxt("%sMTL/%i/%s.txt"%(final_rep_embeddings_savepath, HIDDEN_LAYER, rep),X_transformed)
+            
+        K.clear_session()
+        gc.collect()
             
             

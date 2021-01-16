@@ -13,13 +13,13 @@ from models import MDAD_model, single_MLP_model, single_linear_model
 from experiment_helpers import load_data_for_fold, save_MTL_predictions
 from configs import * 
 
-os.environ["CUDA_VISIBLE_DEVICES"]="2"
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 K.tensorflow_backend._get_available_gpus()
 
 hy_dict_list = list(ParameterGrid(hyperparams))
 
-for baseline_method in ["MLP_baselines", "Linear_baselines"]:
-    print(baseline_method)
+for baseline_method in ["MLP_baselines"]:
+    print(baseline_method) 
     
     # Point to where to save results/predictions/models
     path_to_results = CV_save_path + "results/%s/"%baseline_method
@@ -86,7 +86,7 @@ for baseline_method in ["MLP_baselines", "Linear_baselines"]:
                             callbacks=[CSVLogger(res_dest+'%d.log'%fold_idx), predictions, 
                             # save model:
                             ModelCheckpoint(modelpath+"{epoch:02d}.hdf5", monitor='val_loss', verbose=0, \
-                            save_best_only=False, save_weights_only=False, mode='auto', period=100)])
+                            save_best_only=False, save_weights_only=False, mode='auto', period=200)])
                 else:
                     History = model.fit(x={'main_input': X_train}, y=y_train[phenotype], 
                               validation_data = ({'main_input': X_valid}, y_valid[phenotype]),    

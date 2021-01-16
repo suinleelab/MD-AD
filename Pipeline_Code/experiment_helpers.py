@@ -49,7 +49,7 @@ def load_data_for_fold(fold_idx):
 def load_final_PCA_data(SPECIFIC_FOLDER):
 
     # ------------ LOAD DATA ---------------------------------------------------- #
-    with h5py.File("%s%s/%s.h5"%(path_to_MDAD_data_folders, SPECIFIC_FOLDER,full_pca_dataset), 'r') as hf:
+    with h5py.File("%s/%s.h5"%(path_to_MDAD_data_folders,full_pca_dataset), 'r') as hf:
         X = hf["ge_transformed"][:,:num_components].astype(np.float64)      
         Y = hf["labels"][:]
         labels_names = hf["labels_names"][:]
