@@ -73,6 +73,28 @@ def load_final_PCA_data(SPECIFIC_FOLDER):
 
 
 
+def load_ext_val_intersection_data(path_to_data):
+    X = np.loadtxt(path_to_data + "GE_PCA_train.txt")
+    labels_df =  pd.read_csv(path_to_data + "labels_train.csv")
+
+    shuffle_idx = np.random.permutation(range(len(labels_df)))
+
+    X = X[shuffle_idx]
+    labels_df = labels_df.loc[shuffle_idx]
+
+    y={}
+    for phen in phenotypes:
+        if phen in num_cats.keys():
+            y[phen] = labels_df[phen].astype(float).values / (num_cats[phen] - 1)
+        else:
+            y[phen] = labels_df[phen].astype(float).values
+
+    return X,y
+
+
+
+
+
 def save_MTL_predictions(predictions, preds_dest, fold_idx, y_valid, phenotypes):
     with h5py.File(preds_dest + "%d.h5"%fold_idx, 'w') as hf:
         # loop through epochs -- one group is made per epoch

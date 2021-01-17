@@ -27,12 +27,11 @@ num_components = 500
 
 CV_save_path = "../../md-ad_public_repo_data/Modeling/%s/"%SPECIFIC_FOLDER
 CV_new_save_path = "../../md-ad_public_repo_data/Modeling/%s/"%SPECIFIC_FOLDER
-
-
-
-
 final_models_save_path =  "../../md-ad_public_repo_data/Modeling/final_model/%s/"%SPECIFIC_FOLDER
 path_to_final_models_chosen = "../../AD_Project/analyses/MTL_variable_tasks/6vars-continuous/%s/final_models_chosen/"%SPECIFIC_FOLDER
+
+
+
 final_rep_embeddings_savepath = "../../md-ad_public_repo_data/Modeling/final_model/%s/model_transformations/"%SPECIFIC_FOLDER
 final_rep_consensus_embeddings_savepath = "../../md-ad_public_repo_data/Modeling/final_model/%s/model_transformations_consensus/"%SPECIFIC_FOLDER
 
@@ -40,18 +39,25 @@ final_rep_consensus_embeddings_savepath = "../../md-ad_public_repo_data/Modeling
 IG_save_path = "../../md-ad_public_repo_data/Modeling/IG_weights/"
 
 
+# External validation: 
+path_to_ext_val_results =  "../../md-ad_public_repo_data/External_Validation/"
 
-
+path_to_medoids_info = "../../md-ad_public_repo_data/Modeling/final_model/origGE/model_transformations_consensus/1/normed_KMeans_medoids/MTL_50_medoids_info.csv"
 
 #################  Submitted pipeline  ######################################################
 
 CV_save_path = "../../Pipeline_Outputs_Submitted/%s/"%SPECIFIC_FOLDER
 CV_new_save_path = "../../md-ad_public_repo_data/Modeling/%s/"%SPECIFIC_FOLDER
-
+path_to_final_chosen_models = '../../Pipeline_Outputs_Submitted/origGE/final_models_chosen/'
+final_models_save_path = '../../Pipeline_Outputs_Submitted/final_model/%s/'%SPECIFIC_FOLDER
 
 #path_to_models = "../../AD_Project/analyses/MTL_variable_tasks/6vars-continuous/%s/models/"%SPECIFIC_FOLDER
-#path_to_models = "../../Pipeline_Outputs_Submitted/%s/models/"%SPECIFIC_FOLDER
+path_to_models = "../../Pipeline_Outputs_Submitted/%s/models/"%SPECIFIC_FOLDER
 
+
+
+## External validation:
+path_to_ext_val_results =  "../../Pipeline_Outputs_Submitted/External_Validation/"
 
 ############################################ DATA ############################################
 
@@ -61,3 +67,5 @@ split_pca_dataset = "ACT_MSBBRNA_ROSMAP_PCASplit"
 
 path_to_MDAD_data_folders = "../../md-ad_public_repo_data/DATA/MTL_data/"
 
+
+path_to_ext_val_data_folder = "../../md-ad_public_repo_data/DATA/External_Validation/"
