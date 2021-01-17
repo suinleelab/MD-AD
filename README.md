@@ -1,3 +1,5 @@
+Note: This repo is under construction!
+
 # MD-AD
 
 Code for paper "Unified AI framework to uncover deep interrelationships between gene expression and Alzheimer’s disease neuropathologies". Please read our preprint at the following link: https://doi.org/10.1101/2020.11.30.404087
@@ -9,8 +11,7 @@ Code for paper "Unified AI framework to uncover deep interrelationships between 
 
 
 #### Code to train models:
-- Training MD-AD
-- Training MLP / Linear baselines
+- Training Models - Modeling_Notebooks/
 - Extracting embeddings
 - Extracting gene importances with Integrated Gradients
 
@@ -21,7 +22,6 @@ Code for paper "Unified AI framework to uncover deep interrelationships between 
 - Figures 2c-d, 7a-b - Paper_Analyses/External_validation_predictions.ipynb
 - Figures 3a-c - Paper_Analyses/Evaluate_Embedding_Correlations.ipynb and Paper_Analyses/t-SNE_plots_internal.ipynb
 - Figures 3d-e, 7c - Paper_Analyses/t-SNE_embeddings_external.ipynb
-- Figure 4a-b, 6c - 
-- Figure 4c - 
-- Figures 5 and 6a-b - 
-
+- Figure 4a-b, 6c - Paper_Analyses/Final_genes_color_by_genesets.ipynb
+- Figure 4c - Paper_Analyses/Final_genes_rank_comparisons.ipynb
+- Figures 5 and 6a-b - Paper_Analyses/Final_genes_interaction_analyses.ipynb
