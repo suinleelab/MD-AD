@@ -97,3 +97,9 @@ print("Saved consensus embedding to", s)
 s="%s%i/normed_KMeans_medoids/MTL_%i_medoids_info.csv"%(final_rep_consensus_embeddings_savepath, HIDDEN_LAYER, clusternum)
 cluster_df.iloc[selected_medoids].to_csv(s, index=False)
 print("Saved sources of centroids to", s)
+
+s="%s%i/normed_KMeans_medoids/MTL_%i_all_node_assignments.csv"%(final_rep_consensus_embeddings_savepath, HIDDEN_LAYER, clusternum)
+cluster_df.to_csv("clusters/normed_KMeans_medioids/all_node_assignments.csv")
+
+s="%s%i/normed_KMeans_medoids/MTL_%i_embedding.txt"%(final_rep_consensus_embeddings_savepath, HIDDEN_LAYER, clusternum)
+np.savetxt(s, new_embedding)

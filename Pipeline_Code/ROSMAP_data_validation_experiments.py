@@ -1,188 +1,141 @@
 import h5py
 import pandas as pd
 import numpy as np
-from models import multitask_mlp
-import keras
-from keras.callbacks import CSVLogger
-from keras import backend as K
-import gc
-from sklearn.model_selection import ParameterGrid
-import os
+from itertools import chain, combinations
+import importlib
+import ROSMAP_data_validation_experiments_helpers
+from tensorflow.python.client import device_lib
+from models import linear_baseline
+import pickle
+import pandas as pd
+from configs import path_to_MDAD_data_folders, path_to
 
-class DataValidationExperiment:
-    def __init__(self, fold_idx, train_datasets, test_datasets):
-        self.fold_idx = fold_idx
-        self.train_datasets = train_datasets
-        self.test_datasets = test_datasets
+path_to_saved_results = "../../Pipeline_Outputs_Submitted/origGE/results/MTL/ROSMAP_CV_subsets_results.csv"
 
-        X_train, X_valid, y_train, y_valid = self.load_data_for_fold(fold_idx)
-        self.X_train = X_train
-        self.X_valid = X_valid
-        self.y_train = y_train
-        self.y_valid = y_valid
+with h5py.File(path_to_MDAD_data_folders + "ACT_MSBBRNA_ROSMAP_PCA.h5") as hf:
+    labels_names = hf["labels_names"][:]
+    labels = hf["labels"][:]
+    labels_df = pd.DataFrame(labels, columns=labels_names.astype(str))
 
-    def load_data_for_fold(self, fold_idx):
-        # Leaving this hardcoded for now.  I assume it won't change anytime soon (or ever)
-        phenotypes = ["CERAD", "PLAQUES", "ABETA_IHC", "BRAAK", "TANGLES", "TAU_IHC"]
-        num_components = 500
-        num_cats = {"CERAD": 4, "BRAAK": 6}
-        data_form = "ACT_MSBBRNA_ROSMAP_PCASplit"
-        path_to_folders = "/../../../projects/leelab2/data/AD_DATA/Nicasia/processed/combined_files/prescience_data/"
+variances = pd.read_csv(path_to_MDAD_data_folders + "test_set_variances.csv")
 
-        path_to_split_data = path_to_folders + data_form
 
-        # ------------ LOAD DATA ---------------------------------------------------- #
-        with h5py.File(path_to_split_data + "/" + str(fold_idx) + ".h5", 'r') as hf:
-            if "PCA" in data_form or "KMeans" in data_form:
-                X_train = hf["X_train_transformed"][:, :num_components].astype(np.float64)
-                X_valid = hf["X_valid_transformed"][:, :num_components].astype(np.float64)
+def powerset(seq):
+    """
+    Returns all the subsets of this set. This is a generator.
+    """
+    if len(seq) <= 1:
+        yield seq
+        yield []
+    else:
+        for item in powerset(seq[1:]):
+            yield [seq[0]]+item
+            yield item
+            
+def short_subset_name(subset):
+    short_names = {"ACT.tsv": "A", "ROSMAP_GE1.tsv": "R", "MSBB_RNA.tsv": "M"}
+    short_name = ""
+    for item in subset:
+        short_name += short_names[item]
+    return short_name
+
+train_datasets = ["ACT.tsv", "MSBB_RNA.tsv", "ROSMAP_GE1.tsv"]
+test_datasets = ["ROSMAP_GE1.tsv"]
+folds = range(25, 30)
+subsets = powerset(train_datasets)
+
+
+results_for_fold = {}
+
+linear_results_df = pd.DataFrame(columns=['Val', 'Phenotype', 'Fold', 'Subset'])
+
+for fold in folds:
+    print(fold)
+    for phenotype in ["CERAD", "PLAQUES", "ABETA_IHC", "BRAAK", "TANGLES", "TAU_IHC"]:
+        print(phenotype)
+        for subset in powerset(train_datasets):
+            if not subset:
+                continue
+            importlib.reload(data_validation_experiments)
+            test = ROSMAP_data_validation_experiments_helpers.DataValidationExperiment(fold, subset, test_datasets)
+            test.run_experiment()
+            X_train, X_valid, y_train, y_valid = test.load_data_for_fold(fold)
+            
+            indices_to_keep = np.where(np.isfinite(y_train[phenotype]))
+            X_train = X_train[indices_to_keep]
+            y_train[phenotype] = y_train[phenotype][indices_to_keep]
+            if X_train.shape[0] > 0:
+                
+                indices_to_keep = np.where(np.isfinite(y_valid[phenotype]))
+                X_valid = X_valid[indices_to_keep]
+                y_valid[phenotype] = y_valid[phenotype][indices_to_keep]
+                
+                model = linear_baseline(
+                    X_train, 
+                    {
+                        "learning_rate": 0.0001,
+                        "k_reg": 0.001,
+                        "grad_clip_norm": 0.1
+                    })
+                model.fit(x={'main_input': X_train},
+                                y={'out': y_train[phenotype]}, 
+                      validation_data = ({'main_input': X_valid}, 
+                                         {'out' :y_valid[phenotype]}),                                     
+                      verbose=0,epochs=200, batch_size=20)
+
+                predictions = model.predict(X_valid)
+                mse = ((predictions - y_valid[phenotype])**2).mean()
+                mse /= variances.iloc[fold][phenotype]
             else:
-                X_train = hf["X_train"][:].astype(np.float64)
-                X_valid = hf["X_valid"][:].astype(np.float64)
-            labels_train = hf["y_train"][:]
-            labels_valid = hf["y_valid"][:]
-            labels_names = hf["labels_names"][:]
+                mse = 0
+            linear_results_df = linear_results_df.append({
+                "Val": mse, "Phenotype": phenotype, "Fold": fold, "Subset": short_subset_name(subset)
+            }, ignore_index=True)
+            
+pickle.dump(linear_results_df, open("linear_results_df.p", "wb"))
 
-        # ------------ PROCESS DATA FOR MODEL: TRAIN/TEST SETS + LABELS----------------- #
-        labels_df_train = pd.DataFrame(labels_train, columns=labels_names.astype(str))
-        labels_df_valid = pd.DataFrame(labels_valid, columns=labels_names.astype(str))
+variances = pd.read_csv("test_set_variances.csv")
+subset_to_results = {}
 
-        training_points_in_datasets = labels_df_train.filename.str.decode("utf-8").isin(self.train_datasets)
-        X_train = X_train[training_points_in_datasets]
-        labels_df_train = labels_df_train[training_points_in_datasets]
+def get_final_results(subset, fold_idx):
+    subset_results = pd.read_csv(
+        "MODEL_OUTPUTS/results/md-ad_data_validation/ACT_MSBBRNA_ROSMAP_PCASplit/" + str(subset) + "/" + str(fold_idx) + ".log"
+    )
+    filter_cols = [col for col in subset_results if col.startswith("val")]
+    subset_results = subset_results[filter_cols]
+    final_subset_results = subset_results.iloc[199]
+    return final_subset_results
 
-        valid_points_in_datasets = labels_df_valid.filename.str.decode("utf-8").isin(self.test_datasets)
-        X_valid = X_valid[valid_points_in_datasets]
+subsets = powerset(train_datasets)
+mlp_results_df = pd.DataFrame(columns=['Val', 'Phenotype', 'Fold', 'Subset'])
 
-        labels_df_valid = labels_df_valid[valid_points_in_datasets]
+datasets_to_phenotypes = {
+    "A": ["ABETA_IHC", "TAU_IHC", "CERAD", "BRAAK"],
+    "R": ["ABETA_IHC", "BRAAK", "CERAD", "PLAQUES", "TANGLES", "TAU_IHC"],
+    "M": ["PLAQUES", "CERAD", "BRAAK"]
+}
 
-        shuffle_idx_train = np.random.permutation(range(len(labels_df_train)))
-        shuffle_idx_valid = np.random.permutation(range(len(labels_df_valid)))
+def phenotype_in_subset(phenotype, subset):
+    for dataset in subset:
+        if phenotype in datasets_to_phenotypes[dataset]:
+            return True
+    return False
 
-        X_train = X_train[shuffle_idx_train]
-        X_valid = X_valid[shuffle_idx_valid]
-
-        labels_df_train = labels_df_train.reset_index(drop=True).loc[shuffle_idx_train]
-        labels_df_valid = labels_df_valid.reset_index(drop=True).loc[shuffle_idx_valid]
-
-        y_train = {}
-        y_valid = {}
-        for phen in phenotypes:
-            if phen in num_cats.keys():
-                y_train[phen] = labels_df_train[phen].astype(float).values / (num_cats[phen] - 1)
-                y_valid[phen] = labels_df_valid[phen].astype(float).values / (num_cats[phen] - 1)
-            else:
-                y_train[phen] = labels_df_train[phen].astype(float).values
-                y_valid[phen] = labels_df_valid[phen].astype(float).values
-
-        return X_train, X_valid, y_train, y_valid
-
-    def run_experiment(self):
-
-        hyperparams = {"epochs": [200],
-                       "nonlinearity": ["relu"],
-                       "hidden_sizes_shared": [[500, 100]],
-                       "hidden_sizes_separate": [[50, 10]],
-                       "dropout": [.1],
-                       "k_reg": [.00001, .001],
-                       "learning_rate": [.0001, .001],
-                       "loss_weights": [[1, 1]],
-                       "grad_clip_norm": [.01, .1],
-                       "batch_size": [20]}
-
-        hy_dict_list = list(ParameterGrid(hyperparams))
-
-        for hy_dict in hy_dict_list:
-            num_epochs = hy_dict["epochs"]
-            nonlinearity = hy_dict["nonlinearity"]
-            hidden_sizes_shared = hy_dict["hidden_sizes_shared"]
-            hidden_sizes_separate = hy_dict["hidden_sizes_separate"]
-            dropout = hy_dict["dropout"]
-            k_reg = hy_dict["k_reg"]
-            learning_rate = hy_dict["learning_rate"]
-            loss_weights = hy_dict["loss_weights"]
-            grad_clip_norm = hy_dict["grad_clip_norm"]
-            batch_size = hy_dict["batch_size"]
-
-            title = str(self.train_datasets)
-            #title = "%d_%s_%s_%s_%f_%f_%f_%s_%f_%d" % (
-            #    num_epochs, nonlinearity, str(hidden_sizes_shared), str(hidden_sizes_separate),
-            #    dropout, k_reg, learning_rate, str(loss_weights), grad_clip_norm, batch_size
-            #)
-
-            path_to_results = "MODEL_OUTPUTS/results/md-ad_data_validation/"
-            path_to_preds = "MODEL_OUTPUTS/predictions/md-ad_data_validation/"
-            path_to_models = "MODEL_OUTPUTS/models/md-ad_data_validation/"
-
-            data_form = "ACT_MSBBRNA_ROSMAP_PCASplit"
-            model = multitask_mlp(self.X_train, hy_dict)
-
-            # https://stackoverflow.com/questions/36895627/python-keras-creating-a-callback-with-one-prediction-for-each-epoch
-            X_valid = self.X_valid
-            class prediction_history(keras.callbacks.Callback):
-                def __init__(self):
-                    self.predhis = []
-
-                def on_epoch_end(self, epoch, logs={}):
-                    self.predhis.append(model.predict(X_valid))
-
-            predictions = prediction_history()
-
-            res_dest = path_to_results + "/" + data_form + "/" + title + "/"
-            if not os.path.isdir(res_dest):
-                os.makedirs(res_dest)
-
-            preds_dest = path_to_preds + "/" + data_form + "/" + title + "/"
-            if not os.path.isdir(preds_dest):
-                os.makedirs(preds_dest)
-
-            modelpath = path_to_models + data_form + "/" + title + "/" + str(self.fold_idx) + "/"
-            if not os.path.isdir(modelpath):
-                os.makedirs(modelpath)
-
-            csv_logger = CSVLogger(res_dest + '%d.log' % self.fold_idx)
-
-            print("Fitting model")
-            History = model.fit(x={'main_input': self.X_train},
-                                y={'BRAAK_out': self.y_train["BRAAK"], 'CERAD_out': self.y_train["CERAD"],
-                                   'PLAQUES_out': self.y_train["PLAQUES"], 'TANGLES_out': self.y_train["TANGLES"],
-                                   "ABETA_IHC_out": self.y_train["ABETA_IHC"], "TAU_IHC_out": self.y_train["TAU_IHC"]},
-                                validation_data=({'main_input': self.X_valid},
-                                                 {'BRAAK_out': self.y_valid["BRAAK"], 'CERAD_out': self.y_valid["CERAD"],
-                                                  'PLAQUES_out': self.y_valid["PLAQUES"], 'TANGLES_out': self.y_valid["TANGLES"],
-                                                  "ABETA_IHC_out": self.y_valid["ABETA_IHC"],
-                                                  "TAU_IHC_out": self.y_valid["TAU_IHC"]}),
-
-                                verbose=0, epochs=num_epochs, batch_size=batch_size, callbacks=[csv_logger, predictions,
-                                                                                                keras.callbacks.ModelCheckpoint(
-                                                                                                    modelpath + "{epoch:02d}.hdf5",
-                                                                                                    monitor='val_loss',
-                                                                                                    verbose=0,
-                                                                                                    save_best_only=False,
-                                                                                                    save_weights_only=False,
-                                                                                                    mode='auto',
-                                                                                                    period=100)])
-
-            # SAVE PREDICTIONS
-            with h5py.File(preds_dest + "%d.h5" % self.fold_idx, 'w') as hf:
-                # loop through epochs -- one group is made per epoch
-                for i, ep in enumerate(predictions.predhis):
-                    # within each group created for each epoch, we save a dataset of predictions for the validation set
-                    for j, phenotype in enumerate(["BRAAK", "CERAD", "PLAQUES", "TANGLES",
-                                                   "ABETA_IHC", "TAU_IHC"]):
-
-                        if "/%s/%s" % (str(i), phenotype) in hf:
-                            del hf["/%s/%s" % (str(i), phenotype)]
-                        hf.create_dataset("/%s/%s" % (str(i), phenotype), data=predictions.predhis[i][j],
-                                          dtype=np.float32)
-                # save true values to /y_true/phenotype
-                for phenotype in ["BRAAK", "CERAD", "PLAQUES", "TANGLES",
-                                  "ABETA_IHC", "TAU_IHC"]:
-                    if "/y_true/" + phenotype in hf:
-                        del hf["/y_true/" + phenotype]
-                    hf.create_dataset("/y_true/" + phenotype, data=self.y_valid[phenotype], dtype=np.float32)
-
-
-            K.clear_session()
-            gc.collect()
-            break
+for fold in folds:
+    print(fold)
+    for phenotype in ["CERAD", "PLAQUES", "ABETA_IHC", "BRAAK", "TANGLES", "TAU_IHC"]:
+        print(phenotype)
+        for subset in powerset(train_datasets):
+            if not subset:
+                continue
+            final_subset_results_for_fold = get_final_results(subset, fold)
+            val = final_subset_results_for_fold["val_{}_out_loss".format(phenotype)] / variances.iloc[fold][phenotype] if phenotype_in_subset(phenotype, short_subset_name(subset)) else 0
+            
+            mlp_results_df = mlp_results_df.append({
+                "Val": val,
+                "Phenotype": phenotype,
+                "Fold": fold,
+                "Subset": short_subset_name(subset)
+            }, ignore_index=True)
+            
+mlp_results_df.to_csv(path_to_saved_results)
