@@ -10,10 +10,8 @@ import tensorflow as tf
 import os
 import gc
 
-
 from configs import * 
 from models import ignorenans_categorical_accuracy, ordloss, ignorenans_mse, ignorenans_scaled_mse
-
 
 os.environ["CUDA_VISIBLE_DEVICES"]="2"
 K.tensorflow_backend._get_available_gpus()
@@ -104,7 +102,7 @@ path_to_models = final_models_save_path + "models/MTL/%s/%s/"%(full_pca_dataset,
 repfolders_idx = np.where(["." not in x for x in  os.listdir(path_to_models)])[0]
 repfolders = np.array(os.listdir(path_to_models))[repfolders_idx]
 
-for rep in repfolders[60:]:
+for rep in repfolders:
     path_to_model = path_to_models + "%s/200.hdf5"%rep
 
 

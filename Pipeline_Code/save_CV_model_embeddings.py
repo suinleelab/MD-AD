@@ -7,16 +7,11 @@ from keras.layers import Input, Dense, Dropout
 from keras import optimizers, regularizers, losses
 from keras import backend as K
 from keras.models import Model
-
 import pickle
 import h5py
 import keras
-
 import sys
-
 from sklearn.model_selection import ParameterGrid
-
-
 import os
 os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
@@ -26,8 +21,6 @@ from configs import *
 from models import ignorenans_categorical_accuracy, ordloss, ignorenans_mse, ignorenans_scaled_mse
 from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
-
-
 
 
 
@@ -82,9 +75,9 @@ for mode in ["TEST", "TRAIN"]:
         ############### MD-AD MODEL ##################################################    
 
         if mode == "TEST":
-            path_to_new_files = "%slast_shared_layer_transformations/MTL/"%(CV_new_save_path)
+            path_to_new_files = "%slast_shared_layer_transformations/MTL/"%(CV_save_path)
         else:
-            path_to_new_files = "%slast_shared_layer_transformations_TRAIN/MTL/"%(CV_new_save_path)    
+            path_to_new_files = "%slast_shared_layer_transformations_TRAIN/MTL/"%(CV_save_path)    
 
         hy_name = MTL_FINAL_MODELS[fold_idx]
 
@@ -106,9 +99,9 @@ for mode in ["TEST", "TRAIN"]:
         ################## MLP MODELS ################################################
 
         if mode == "TEST":
-            path_to_new_files = "%slast_shared_layer_transformations/MLP_baselines/"%(CV_new_save_path)
+            path_to_new_files = "%slast_shared_layer_transformations/MLP_baselines/"%(CV_save_path)
         else:
-            path_to_new_files = "%slast_shared_layer_transformations_TRAIN/MLP_baselines/"%(CV_new_save_path)
+            path_to_new_files = "%slast_shared_layer_transformations_TRAIN/MLP_baselines/"%(CV_save_path)
 
         for phenotype in ["ABETA_IHC", "TAU_IHC", "CERAD", "BRAAK", "PLAQUES", "TANGLES"]:  
 
@@ -137,9 +130,9 @@ for mode in ["TEST", "TRAIN"]:
         ############## UNSUPERVISED METHODS ###########################################
 
         if mode =="TRAIN":
-            path_to_new_files = "%slast_shared_layer_transformations_TRAIN/unsupervised_methods/"%(CV_new_save_path)
+            path_to_new_files = "%slast_shared_layer_transformations_TRAIN/unsupervised_methods/"%(CV_save_path)
         else:
-            path_to_new_files = "%slast_shared_layer_transformations/unsupervised_methods/"%(CV_new_save_path)
+            path_to_new_files = "%slast_shared_layer_transformations/unsupervised_methods/"%(CV_save_path)
 
 
         with h5py.File(path_to_split_data + "/%i.h5"%fold_idx, 'r') as hf:

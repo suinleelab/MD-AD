@@ -8,6 +8,7 @@ from keras import backend as K
 import gc
 from sklearn.model_selection import ParameterGrid
 import os
+from configs import * 
 
 class DataValidationExperiment:
     def __init__(self, fold_idx, train_datasets, test_datasets):
@@ -27,7 +28,7 @@ class DataValidationExperiment:
         num_components = 500
         num_cats = {"CERAD": 4, "BRAAK": 6}
         data_form = "ACT_MSBBRNA_ROSMAP_PCASplit"
-        path_to_folders = "/../../../projects/leelab2/data/AD_DATA/Nicasia/processed/combined_files/prescience_data/"
+        path_to_folders = path_to_MDAD_data_folders
 
         path_to_split_data = path_to_folders + data_form
 

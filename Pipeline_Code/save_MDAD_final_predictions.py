@@ -25,7 +25,6 @@ config.gpu_options.allow_growth=True
 sess = tf.Session(config=config)
 
 
-MTL_phenotype_output_mapping = {"BRAAK":0, "CERAD":1, "PLAQUES":2, "TANGLES":3, "ABETA_IHC":4, "TAU_IHC":5}
 
 with h5py.File(path_to_MDAD_data_folders + "%s.h5"%(full_pca_dataset), 'r') as hf:
     X = hf["ge_transformed"][:,:num_components].astype(np.float64)      
@@ -42,6 +41,8 @@ MTL_final_final_model = pickle.load(open(path_to_final_models_chosen + "MTL/fina
 
 
 #################### Get predictions for each run ##############################
+
+MTL_phenotype_output_mapping = {}
 
 method = "MTL"
 for i in range(100):
