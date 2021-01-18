@@ -33,11 +33,10 @@ path_to_final_models_chosen = "../../AD_Project/analyses/MTL_variable_tasks/6var
 
 
 final_rep_embeddings_savepath = "../../md-ad_public_repo_data/Modeling/final_model/%s/model_transformations/"%SPECIFIC_FOLDER
-final_rep_consensus_embeddings_savepath = "../../md-ad_public_repo_data/Modeling/final_model/%s/model_transformations_consensus/"%SPECIFIC_FOLDER
+final_rep_consensus_embeddings_savepath = "../../Pipeline_Outputs_Submitted/model_transformations_consensus/"
 
-
-IG_save_path = "../../md-ad_public_repo_data/Modeling/IG_weights/"
-
+IG_save_path = "../../Pipeline_Outputs_Submitted/IG_weights/"
+path_to_gene_rankings = "../../Pipeline_Outputs_Submitted/gene_rankings/"
 
 # External validation: 
 path_to_ext_val_results =  "../../md-ad_public_repo_data/External_Validation/"
