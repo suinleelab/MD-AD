@@ -68,3 +68,5 @@ path_to_MDAD_data_folders = "../../DATA/MTL_data/"
 
 
 path_to_ext_val_data_folder = "../../DATA/External_Validation/"
+
+path_to_geneset_data = "../../DATA/geneset_data/"
