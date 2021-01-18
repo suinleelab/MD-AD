@@ -65,7 +65,7 @@ full_dataset = "ACT_MSBBRNA_ROSMAP"
 full_pca_dataset = "ACT_MSBBRNA_ROSMAP_PCA"
 split_pca_dataset = "ACT_MSBBRNA_ROSMAP_PCASplit"
 
-path_to_MDAD_data_folders = "../../md-ad_public_repo_data/DATA/MTL_data/"
+path_to_MDAD_data_folders = "../../DATA/MTL_data/"
 
 
-path_to_ext_val_data_folder = "../../md-ad_public_repo_data/DATA/External_Validation/"
+path_to_ext_val_data_folder = "../../DATA/External_Validation/"
