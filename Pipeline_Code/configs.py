@@ -52,7 +52,7 @@ final_models_save_path = '../../Pipeline_Outputs_Submitted/final_model/%s/'%SPEC
 
 #path_to_models = "../../AD_Project/analyses/MTL_variable_tasks/6vars-continuous/%s/models/"%SPECIFIC_FOLDER
 path_to_models = "../../Pipeline_Outputs_Submitted/%s/models/"%SPECIFIC_FOLDER
-
+path_to_preds = "../../Pipeline_Outputs_Submitted/final_model/MDAD_predictions/"
 
 
 ## External validation:
