@@ -16,7 +16,7 @@ from experiment_helpers import load_final_PCA_data, save_MTL_predictions
 
 from configs import * 
 
-os.environ["CUDA_VISIBLE_DEVICES"]="2"
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 K.tensorflow_backend._get_available_gpus()
 
 

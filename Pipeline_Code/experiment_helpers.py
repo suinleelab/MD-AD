@@ -49,7 +49,7 @@ def load_data_for_fold(fold_idx):
 def load_final_PCA_data(SPECIFIC_FOLDER):
 
     # ------------ LOAD DATA ---------------------------------------------------- #
-    with h5py.File("%s%s/%s.h5"%(path_to_MDAD_data_folders, SPECIFIC_FOLDER,full_pca_dataset), 'r') as hf:
+    with h5py.File("%s/%s.h5"%(path_to_MDAD_data_folders,full_pca_dataset), 'r') as hf:
         X = hf["ge_transformed"][:,:num_components].astype(np.float64)      
         Y = hf["labels"][:]
         labels_names = hf["labels_names"][:]
@@ -69,6 +69,28 @@ def load_final_PCA_data(SPECIFIC_FOLDER):
             y[phen] = labels_df[phen].astype(float).values
             
     return X, y
+
+
+
+
+def load_ext_val_intersection_data(path_to_data):
+    X = np.loadtxt(path_to_data + "GE_PCA_train.txt")
+    labels_df =  pd.read_csv(path_to_data + "labels_train.csv")
+
+    shuffle_idx = np.random.permutation(range(len(labels_df)))
+
+    X = X[shuffle_idx]
+    labels_df = labels_df.loc[shuffle_idx]
+
+    y={}
+    for phen in phenotypes:
+        if phen in num_cats.keys():
+            y[phen] = labels_df[phen].astype(float).values / (num_cats[phen] - 1)
+        else:
+            y[phen] = labels_df[phen].astype(float).values
+
+    return X,y
+
 
 
 
