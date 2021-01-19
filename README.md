@@ -70,7 +70,7 @@ These notebooks process results from the MD-AD pipeline and generate figures pre
 ------------
 ### Dependencies 
 
-This software was originally designed and run on a system running Ubuntu 16.04.3 with Python 3.3.6. For neural network model training and interpretation, we used a single Nvidia GeForce GTX 980 Ti GPU, though we anticipate that other GPUs will also work. Python software packages used: Tensorflow (1.3.0), Keras (2.0.4), numpy (1.17.3), pandas (0.24.1), scipy (1.3.1), scikit-learn (0.21.3), matplotlib (3.1.2), seaborn (0.9.0), h5py (2.9.0). We additionally used the following software packages: [IntegratedGradients](https://github.com/hiranumn/IntegratedGradients), and [GSEApy](https://pypi.org/project/gseapy/). 
+This software was originally designed and run on a system running Ubuntu 16.04.3 with Python 3.3.6. For neural network model training and interpretation, we used a single Nvidia GeForce GTX 980 Ti GPU, though we anticipate that other GPUs will also work. Standard python software packages used: Tensorflow (1.3.0), Keras (2.0.4), numpy (1.17.3), pandas (0.24.1), scipy (1.3.1), scikit-learn (0.21.3), matplotlib (3.1.2), seaborn (0.9.0), h5py (2.9.0). We additionally used the following Python software packages available here: [IntegratedGradients](https://github.com/hiranumn/IntegratedGradients), and [GSEApy](https://pypi.org/project/gseapy/). 
 
 -----------
 ## Data Availability:
