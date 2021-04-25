@@ -26,8 +26,8 @@ from sklearn.cluster import KMeans
 
 path_to_split_data = path_to_MDAD_data_folders + "%s"%(split_pca_dataset)
 
-MTL_FINAL_MODELS = pickle.load(open(path_to_final_models_chosen + "MTL/folds.p", "rb" ) )
-MLP_BASELINES_FINAL_MODELS =pickle.load(open(path_to_final_models_chosen + "MLP_baselines/folds.p", "rb" ) )
+MTL_FINAL_MODELS = pickle.load(open(path_to_final_chosen_models + "MTL/folds.p", "rb" ) )
+MLP_BASELINES_FINAL_MODELS =pickle.load(open(path_to_final_chosen_models + "MLP_baselines/folds.p", "rb" ) )
 layer_number = 3
 
 def get_model_layers(model_file, num_layers):

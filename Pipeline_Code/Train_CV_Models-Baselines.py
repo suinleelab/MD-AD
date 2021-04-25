@@ -18,7 +18,7 @@ K.tensorflow_backend._get_available_gpus()
 
 hy_dict_list = list(ParameterGrid(hyperparams))
 
-for baseline_method in ["MLP_baselines"]:
+for baseline_method in ["Linear_baselines","MLP_baselines"]:
     print(baseline_method) 
     
     # Point to where to save results/predictions/models

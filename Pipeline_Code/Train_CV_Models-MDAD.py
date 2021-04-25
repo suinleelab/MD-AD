@@ -13,7 +13,7 @@ from models import MDAD_model, single_MLP_model, single_linear_model
 from experiment_helpers import load_data_for_fold, save_MTL_predictions
 from configs import * 
 
-os.environ["CUDA_VISIBLE_DEVICES"]="1"
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 K.tensorflow_backend._get_available_gpus()
 
 

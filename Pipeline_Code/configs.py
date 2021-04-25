@@ -26,6 +26,9 @@ full_pca_dataset = "ACT_MSBBRNA_ROSMAP_PCA"
 split_pca_dataset = "ACT_MSBBRNA_ROSMAP_PCASplit"
 
 path_to_MDAD_data_folders = "../../DATA/MTL_data/"
+#path_to_MDAD_data_folders = "../../DATA/MTL_data_rev/" # Revision experiments with new CV Splits
+
+
 path_to_ext_val_data_folder = "../../DATA/External_Validation/"
 path_to_geneset_data = "../../DATA/geneset_data/"
 
@@ -33,7 +36,10 @@ path_to_geneset_data = "../../DATA/geneset_data/"
 
 # Paths for saving cross-validation models and results 
 CV_save_path = "../../Pipeline_Outputs_Submitted/%s/"%SPECIFIC_FOLDER
-path_to_final_chosen_models = '../../Pipeline_Outputs_Submitted/%s/final_models_chosen/'%SPECIFIC_FOLDER
+#CV_save_path = "../../Pipeline_Outputs_Submitted/%s_rev/"%SPECIFIC_FOLDER # Revision experiments with new CV Splits
+
+
+path_to_final_chosen_models = CV_save_path + 'final_models_chosen/'
 
 # path for final models and predictions
 final_models_save_path = '../../Pipeline_Outputs_Submitted/final_model/%s/'%SPECIFIC_FOLDER
